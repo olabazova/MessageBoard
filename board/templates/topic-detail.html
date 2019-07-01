@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Message Board</title>
+
+<style>
+.post
+{
+height: 80px;
+}
+</style>
+
+
+  </head>
+  <body>
+        <nav class="navbar bg-light">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{% url 'main'%}">Message Board</a>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'sign-up'%}">Sign Up</a></li>
+                    {% if user_login == False %}
+                    <li><a data-toggle="modal" data-target="#signin" href="#signin">Log In</a></li>
+                    {% else %}
+                    <li><a href="{% url 'logout' %}">Log Out</a></li>
+                    <li><a>Logged in as {{user.username}}</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+<div class="container">
+    <div class="page-header">
+        <h2>{{topic.title}}</h2>
+    </div>
+    {% for post in posts %}
+        <div class="well post" style="margin-bottom:20px;">
+            {{post.content}}
+            <div class="pull-right">
+                Post By:
+                {{post.author.username}}
+                {% if post in user.post_set.all %}
+                <form method='post' action={% url 'delete-post' %}>
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value={{post.id}}>
+                    <input type="submit" class="btn btn-danger" value="Delete Post">
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+
+    {% if user_login == True %}
+        <a class="btn btn-success" data-toggle="modal" data-target="#newpost">Add New post</a>
+    {% endif %}
+    </div>
+</div>
+
+
+<div class="modal fade" id="newpost">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Add a Post</h4>
+            </div>
+            <form method="post" action={% url 'add-post'%} style="text-align:center;margin:10px;">
+                {% csrf_token %}
+                <input type="hidden" name="topic_id" value={{topic.id}}>
+                <textarea rows="4" cols="50" name="post_content"></textarea>
+                <input type="submit" class="btn btn-success" value="Submit">
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+   <div class="modal fade" id="signin">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4>Login a User</h4>
+                </div>
+                <form method="post" action="{% url 'sign-in' %}" style="text-algin:center;margin:10px;">
+                    {% csrf_token %}
+                    <b>Username:</b>
+                    <input type="text" class="form-control" name="username">
+                    <br />
+                    <b>Password:</b>
+                    <input type="password" class="form-control" name="password">
+                    <br />
+                    <input type="submit" class="btn btn-success" value="Sign In">
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
